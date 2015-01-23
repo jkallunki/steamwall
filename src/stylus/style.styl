@@ -22,7 +22,7 @@ input[type="text"]
   0%
     transform translate3d(0,0,0) scale(1.0)
   100%
-    transform translate3d(0,0,0) scale(1.2)
+    transform translate3d(0,0,0) scale(1.1)
 
 .img
   position absolute
@@ -33,7 +33,12 @@ input[type="text"]
   background-size contain
   background-position center center
   background-repeat no-repeat
-  /*animation zoom-in 10s ease-in-out*/
+  opacity 0
+  transition all 500ms ease-in-out
+  transform translate3d(0,0,0) scale(1.1)
+  &.visible
+    opacity 1
+    animation zoom-in 5s ease-in-out
 
 .btn
   color #f0f0f0

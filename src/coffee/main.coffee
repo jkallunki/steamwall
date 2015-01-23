@@ -6,16 +6,22 @@ _   = require 'lodash'
 ko.bindingHandlers.slideshow=
   init: (element, valueAccessor, allBindings, viewModel, bindingContext) ->
 
+    imgEls = $(element).find('.img')
+    console.log imgEls
+
+    pointer = 0
     updateImage = ->
       images = ko.unwrap(valueAccessor())
       if images.length > 0
         src = (_.sample(images)).src
-        console.log src
-        $(element).css 'background-image', 'url('+src+')'
+        $(imgEls[pointer]).css 'background-image', 'url('+src+')'
+        $(imgEls[pointer]).removeClass 'visible'
+        pointer = (pointer + 1) % 2
+        $(imgEls[pointer]).addClass 'visible'
 
     updateImage()
     setInterval updateImage, 5000
-    
+
 
 class ScreenshotViewModel
   constructor: ->

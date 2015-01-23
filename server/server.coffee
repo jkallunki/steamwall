@@ -32,9 +32,6 @@ app.get '/screenshots', (req, res) ->
 
 app.get '/data', (req, res) ->
 
-  #userids = ['d-tail', '76561198076596010']
-  #appids  = ['221100', '33930']
-
   userids = req.query.userids
   appids = req.query.appids
 
