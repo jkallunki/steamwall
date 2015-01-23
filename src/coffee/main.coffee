@@ -3,6 +3,20 @@ ko  = require 'knockout'
 qs  = require 'qs'
 _   = require 'lodash'
 
+ko.bindingHandlers.slideshow=
+  init: (element, valueAccessor, allBindings, viewModel, bindingContext) ->
+
+    updateImage = ->
+      images = ko.unwrap(valueAccessor())
+      if images.length > 0
+        src = (_.sample(images)).src
+        console.log src
+        $(element).css 'background-image', 'url('+src+')'
+
+    updateImage()
+    setInterval updateImage, 5000
+    
+
 class ScreenshotViewModel
   constructor: ->
     @src = ko.observable()
@@ -18,6 +32,8 @@ class AppViewModel
     @gameInput      = ko.observable ''
 
     @currentImage   = ko.observable null
+
+    @screenshots    = ko.observableArray []
 
   toggleConfig: =>
     @configVisible !@configVisible()
@@ -50,7 +66,7 @@ class AppViewModel
       console.log data
 
       if data.length > 0
-        @currentImage _.sample(data)
+        @screenshots data
 
 $ ->
   savedConfig = JSON.parse localStorage.getItem('config')

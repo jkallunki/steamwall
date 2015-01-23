@@ -5,8 +5,7 @@ html
     link(rel='stylesheet' href='fonts/font-awesome/css/font-awesome.min.css')
     link(rel='stylesheet' href='css/style.css')
   body
-    div(data-bind='with: currentImage')
-      img(data-bind='attr: {src: src}')
+    .img(data-bind='slideshow: screenshots')
 
     #config(data-bind="css: {'visible': configVisible}")
       h1 Configuration
