@@ -43,6 +43,6 @@ module.exports =
     ).flatten().value()
 
     q.allSettled(promises).then (results) ->
-      callback _.filter(results, (r) -> r.state == 'fulfilled').map((r) -> r.value)
+      callback _.chain(results).filter((r) -> r.state == 'fulfilled').map((r) -> r.value).flatten().value()
 
 

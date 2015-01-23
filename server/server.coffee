@@ -31,9 +31,12 @@ app.get '/screenshots', (req, res) ->
     res.send screenshots
 
 app.get '/data', (req, res) ->
-  
-  userids = ['d-tail', '76561198076596010']
-  appids  = ['221100', '33930']
+
+  #userids = ['d-tail', '76561198076596010']
+  #appids  = ['221100', '33930']
+
+  userids = req.query.userids
+  appids = req.query.appids
 
   steam.getScreenshots userids, appids, (data) ->
     res.send data

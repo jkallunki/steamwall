@@ -52,7 +52,8 @@
     "node-curl": "~0.3.3",
     "cheerio": "~0.18.0",
     "lodash": "~2.4.1",
-    "q": "~1.1.2"
+    "q": "~1.1.2",
+    "qs": "~2.3.3"
   },
   "browserify": {
     "transform": [
