@@ -3,43 +3,26 @@ ko  = require 'knockout'
 qs  = require 'qs'
 _   = require 'lodash'
 
-ko.bindingHandlers.slideshow=
-  init: (element, valueAccessor, allBindings, viewModel, bindingContext) ->
-
-    imgEls = $(element).find('.img')
-    console.log imgEls
-
-    pointer = 0
-    updateImage = ->
-      images = ko.unwrap(valueAccessor())
-      if images.length > 0
-        src = (_.sample(images)).src
-        $(imgEls[pointer]).css 'background-image', 'url('+src+')'
-        $(imgEls[pointer]).removeClass 'visible'
-        pointer = (pointer + 1) % 2
-        $(imgEls[pointer]).addClass 'visible'
-
-    updateImage()
-    setInterval updateImage, 5000
-
-
-class ScreenshotViewModel
-  constructor: ->
-    @src = ko.observable()
-    @user = ko.observable()
+require './bindings.coffee'
 
 class AppViewModel
   constructor: (config) ->
     @configVisible  = ko.observable false
-    @players        = ko.observableArray config.players
-    @games          = ko.observableArray config.games
+
+    @players = ko.observableArray []
+    @games   = ko.observableArray []
 
     @playerInput    = ko.observable ''
     @gameInput      = ko.observable ''
-
-    @currentImage   = ko.observable null
-
     @screenshots    = ko.observableArray []
+
+    if config?
+      if config.players? and config.players.length > 0
+        @players config.players
+      if config.games? and config.games.length > 0
+        @games config.games
+        @updateContent() if config.players? and config.players.length > 0
+
 
   toggleConfig: =>
     @configVisible !@configVisible()
@@ -65,6 +48,9 @@ class AppViewModel
       players: @players()
       games: @games()
     })
+    @updateContent()
+
+  updateContent: =>
     params =
       userids: @players()
       appids: @games()

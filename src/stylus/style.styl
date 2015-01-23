@@ -1,3 +1,9 @@
+@keyframes li-appear
+  0%
+    opacity 0
+  100%
+    opacity 1
+
 body, html
   margin 0
   background #000
@@ -34,11 +40,19 @@ input[type="text"]
   background-position center center
   background-repeat no-repeat
   opacity 0
-  transition all 500ms ease-in-out
   transform translate3d(0,0,0) scale(1.1)
   &.visible
     opacity 1
     animation zoom-in 5s ease-in-out
+  .author
+    position absolute
+    font-size 3em
+    left 0
+    bottom 1em
+    width 100%
+    text-align center
+    font-weight bold
+    text-shadow 0 0 0.1em rgba(0,0,0,0.5)
 
 .btn
   color #f0f0f0
@@ -104,6 +118,7 @@ input[type="text"]
       padding 0.5em
       margin-bottom 1px
       position relative
+      animation li-appear 400ms ease-in-out
       .remove
         position absolute
         top 0
