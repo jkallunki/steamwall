@@ -29,12 +29,16 @@ html
 
       ul(data-bind="foreach: games")
         li
-          span(data-bind="text: $data")
+          span(data-bind="text: $data.title, visible: typeof $data.title != 'undefined'")
+          span(data-bind="text: $data.id, visible: typeof $data.title == 'undefined'")
           span.remove(data-bind="click: $parent.removeGame")
             i.fa.fa-times
       
       form(data-bind="submit: addGame")
-        input(type="text" data-bind="value: gameInput" placeholder="App ID")
+        div.autocomplete-wrapper
+          input(type="text" data-bind="value: gameInput, valueUpdate: 'afterkeydown'" placeholder="Game title / App ID")
+          div.autocomplete(data-bind="foreach: gameInputOptions")
+            a(href='#', data-bind="text: $data.title, click: $parent.chooseGameOption")
 
       a.btn.apply-changes(href='#' data-bind="click: applyChanges")
         i.fa.fa-check

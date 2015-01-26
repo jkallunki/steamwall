@@ -30,11 +30,14 @@ app.get '/screenshots', (req, res) ->
     console.log screenshots
     res.send screenshots
 
-app.get '/data', (req, res) ->
+app.get '/gamesearch', (req, res) ->
+  keyword = req.query.keyword
+  steam.getGameSearch keyword, (data) ->
+    res.send data
 
+app.get '/data', (req, res) ->
   userids = req.query.userids
   appids = req.query.appids
-
   steam.getScreenshots userids, appids, (data) ->
     res.send data
 

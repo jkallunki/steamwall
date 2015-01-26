@@ -3,7 +3,8 @@ _       = require 'lodash'
 ko      = require 'knockout'
 loaded  = require 'imagesloaded'
 
-ko.bindingHandlers.slideshow=
+
+ko.bindingHandlers.slideshow =
   init: (element, valueAccessor, allBindings, viewModel, bindingContext) ->
     imgEls = $(element).find '.img'
     pointer = 0

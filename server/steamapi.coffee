@@ -6,9 +6,14 @@ q          = require 'q'
 module.exports =
 
   formProfileUrl: (userid, appid = 0) ->
+    userid = encodeURIComponent userid
     url = 'http://steamcommunity.com/'
     url += if /^\d+$/.test userid then 'profiles' else 'id'
     url + '/' + userid + '/screenshots/?appid=' + appid + '&sort=newestfirst&browsefilter=myfiles&view=grid'
+
+  formGameSearchUrl: (keyword) -> 
+    keyword = encodeURIComponent keyword
+    'http://store.steampowered.com/search/suggest?term=' + keyword + '&f=games&l=english'
 
   getScreenhotPageUrls: (userid, appid, callback) ->
     curl = Curl.create()
@@ -45,4 +50,14 @@ module.exports =
     q.allSettled(promises).then (results) ->
       callback _.chain(results).filter((r) -> r.state == 'fulfilled').map((r) -> r.value).flatten().value()
 
-
+  getGameSearch: (keyword, callback) ->
+    keyword = keyword.trim()
+    if keyword.length == 0
+      callback []
+    else
+      curl = Curl.create()
+      curl @formGameSearchUrl(keyword), (err) ->
+        $ = cheerio.load this.body
+        @close()
+        data = $('a').map(-> id: $(this).data('ds-appid'), title: $(this).find('.match_name').text()).get()
+        callback data

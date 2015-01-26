@@ -68,6 +68,26 @@ input[type="text"]
   &:hover
     background #505050
 
+.autocomplete-wrapper
+  position relative
+
+.autocomplete
+  position absolute
+  top 100%
+  z-index 999
+  width 100%
+  box-shadow 0 0.1em 0.25em rgba(0,0,0,0.5)
+  a
+    display block
+    background #404040
+    color #f0f0f0
+    text-decoration none
+    padding 0.5em
+    border-bottom 1px solid #303030
+    transition all 100ms ease-in-out
+    &:hover
+      background #505050
+
 #config
   position absolute
   top 0

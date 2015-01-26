@@ -16,13 +16,17 @@ class AppViewModel
     @gameInput      = ko.observable ''
     @screenshots    = ko.observableArray []
 
+    @gameInputOptions = ko.observableArray []
+    ko.computed =>
+      $.getJSON '/gamesearch', {keyword: @gameInput()}, (data) =>
+        @gameInputOptions data
+
     if config?
       if config.players? and config.players.length > 0
         @players config.players
       if config.games? and config.games.length > 0
         @games config.games
         @updateContent() if config.players? and config.players.length > 0
-
 
   toggleConfig: =>
     @configVisible !@configVisible()
@@ -36,9 +40,15 @@ class AppViewModel
     @players.remove player
 
   addGame: =>
-    unless @games.indexOf(@gameInput()) >= 0
-      @games.push @gameInput() 
-      @gameInput ''
+    gameId = parseInt @gameInput()
+    unless isNaN(gameId) || _.find(@games(), (g) => gameId == g.id)
+      @games.push {id: gameId}
+    @gameInput ''
+
+  chooseGameOption: (game) =>
+    unless _.find(@games(), (g) -> game.id == g.id)
+      @games.push game
+    @gameInput ''
 
   removeGame: (game) =>
     @games.remove game
@@ -53,10 +63,8 @@ class AppViewModel
   updateContent: =>
     params =
       userids: @players()
-      appids: @games()
+      appids: _.map @games(), (g) -> g.id
     $.getJSON '/data', params, (data) =>
-      console.log data
-
       if data.length > 0
         @screenshots data
 
