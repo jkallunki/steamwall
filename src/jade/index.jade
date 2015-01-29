@@ -12,37 +12,40 @@ html
         span.author
 
     #config(data-bind="css: {'visible': configVisible}")
-      h1 Configuration
+      #config-scroller
+        #config-scroller-content
+          h1 Configuration
 
-      h2 Players
+          h2 Players
 
-      ul(data-bind="foreach: players")
-        li
-          span(data-bind="text: $data")
-          span.remove(data-bind="click: $parent.removePlayer")
-            i.fa.fa-times
+          ul(data-bind="foreach: players")
+            li
+              span(data-bind="text: $data")
+              span.remove(data-bind="click: $parent.removePlayer")
+                i.fa.fa-times
 
-      form(data-bind="submit: addPlayer")
-        input(type="text" data-bind="value: playerInput" placeholder="Steam ID")
+          form(data-bind="submit: addPlayer")
+            input(type="text" data-bind="value: playerInput" placeholder="Steam ID")
 
-      h2 Games
+          h2 Games
 
-      ul(data-bind="foreach: games")
-        li
-          span(data-bind="text: $data.title, visible: typeof $data.title != 'undefined'")
-          span(data-bind="text: $data.id, visible: typeof $data.title == 'undefined'")
-          span.remove(data-bind="click: $parent.removeGame")
-            i.fa.fa-times
-      
-      form(data-bind="submit: addGame")
-        div.autocomplete-wrapper
-          input(type="text" data-bind="value: gameInput, valueUpdate: 'afterkeydown'" placeholder="Game title / App ID")
-          div.autocomplete(data-bind="foreach: gameInputOptions")
-            a(href='#', data-bind="text: $data.title, click: $parent.chooseGameOption")
+          ul(data-bind="foreach: games")
+            li
+              span(data-bind="text: $data.title, visible: typeof $data.title != 'undefined'")
+              span(data-bind="text: $data.id, visible: typeof $data.title == 'undefined'")
+              span.remove(data-bind="click: $parent.removeGame")
+                i.fa.fa-times
+          
+          form(data-bind="submit: addGame")
+            div.autocomplete-wrapper
+              input(type="text" data-bind="value: gameInput, valueUpdate: 'afterkeydown'" placeholder="Game title / App ID")
+              div.autocomplete(data-bind="foreach: gameInputOptions")
+                a(href='#', data-bind="text: $data.title, click: $parent.chooseGameOption")
 
-      a.btn.apply-changes(href='#' data-bind="click: applyChanges")
-        i.fa.fa-check
-        span Apply changes
+          a.btn.apply-changes(href='#' data-bind="click: applyChanges, css: {disabled: saving}")
+            i.fa.fa-check(data-bind='visible: !saving()')
+            i.fa.fa-cog(data-bind='visible: saving')
+            span Apply changes
 
 
       .handle(data-bind="click: toggleConfig")

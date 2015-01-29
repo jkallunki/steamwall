@@ -94,7 +94,6 @@ input[type="text"]
   right 0
   bottom 0
   width 20em
-  padding 1em
   background #303030
   transition all 900ms ease-in-out
   transform translate3d(100%,0,0)
@@ -108,6 +107,7 @@ input[type="text"]
     top 2em
     border-radius 0.25em 0 0 0.25em
     cursor pointer
+    transform translate3d(0,0,0)
     i
       font-size 2em
       line-height 1.5em
@@ -133,6 +133,7 @@ input[type="text"]
     list-style none
     margin 0
     padding 0
+    position relative
     li
       background #242424
       padding 0.5em
@@ -152,3 +153,24 @@ input[type="text"]
         cursor pointer
         &:hover
           background #c03030
+
+@keyframes cog-roll
+  0%
+    transform rotate(0deg)
+  100%
+    transform rotate(360deg)
+
+.apply-changes
+  i.fa-cog
+    animation cog-roll 2s linear 0s infinite
+  &.disabled
+    opacity 0.2
+
+#config-scroller
+  overflow-y auto
+  height 100%
+  width 100%
+  transform translate3d(0,0,0)
+
+#config-scroller-content
+  padding 1em

@@ -18,9 +18,12 @@ module.exports =
   getScreenhotPageUrls: (userid, appid, callback) ->
     curl = Curl.create()
     curl @formProfileUrl(userid, appid), (err) ->
-      $ = cheerio.load this.body
+      urls = []
+      unless err?
+        $ = cheerio.load this.body
+        urls = $('.profile_media_item').map(-> $(this).attr('href')).get()
       @close()
-      callback $('.profile_media_item').map(-> $(this).attr('href')).get()
+      callback urls
 
   getUserScreenshots: (userid, appid, callback) ->
     @getScreenhotPageUrls userid, appid, (urls) ->
@@ -28,11 +31,14 @@ module.exports =
         def = q.defer()
         curl = Curl.create()
         curl url, (err) ->
-          $ = cheerio.load this.body
+          if err?
+            def.reject()
+          else
+            $ = cheerio.load this.body
+            def.resolve
+              src: $('#ActualMedia').parent().attr('href')
+              author: $('.linkAuthor').find('a').text()
           @close()
-          def.resolve
-            src: $('#ActualMedia').parent().attr('href')
-            author: $('.linkAuthor').find('a').text()
         def.promise
 
       q.allSettled(promises).then (results) ->
@@ -57,7 +63,9 @@ module.exports =
     else
       curl = Curl.create()
       curl @formGameSearchUrl(keyword), (err) ->
-        $ = cheerio.load this.body
+        data = []
+        unless err?
+          $ = cheerio.load this.body
+          data = $('a').map(-> id: $(this).data('ds-appid'), title: $(this).find('.match_name').text()).get()
         @close()
-        data = $('a').map(-> id: $(this).data('ds-appid'), title: $(this).find('.match_name').text()).get()
         callback data

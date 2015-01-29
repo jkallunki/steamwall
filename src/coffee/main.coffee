@@ -7,13 +7,14 @@ require './bindings.coffee'
 
 class AppViewModel
   constructor: (config) ->
-    @configVisible  = ko.observable false
+    @configVisible  = ko.observable true
 
     @players = ko.observableArray []
     @games   = ko.observableArray []
 
     @playerInput    = ko.observable ''
     @gameInput      = ko.observable ''
+    @saving         = ko.observable false
     @screenshots    = ko.observableArray []
 
     @gameInputOptions = ko.observableArray []
@@ -54,11 +55,13 @@ class AppViewModel
     @games.remove game
 
   applyChanges: =>
-    localStorage.setItem 'config', JSON.stringify({
-      players: @players()
-      games: @games()
-    })
-    @updateContent()
+    unless @saving()
+      localStorage.setItem 'config', JSON.stringify({
+        players: @players()
+        games: @games()
+      })
+      @updateContent()
+      @saving true
 
   updateContent: =>
     params =
@@ -67,6 +70,7 @@ class AppViewModel
     $.getJSON '/data', params, (data) =>
       if data.length > 0
         @screenshots data
+        @saving false
 
 $ ->
   savedConfig = JSON.parse localStorage.getItem('config')
