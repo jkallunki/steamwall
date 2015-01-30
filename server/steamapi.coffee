@@ -4,6 +4,16 @@ _          = require 'lodash'
 q          = require 'q'
 
 module.exports =
+  getUrl: (url) ->
+    def = q.defer()
+    curl = Curl.create()
+    curl url, (err) ->
+      if err?
+        def.reject()
+      else
+        def.resolve @body
+      @close()
+    def.promise
 
   formProfileUrl: (userid, appid = 0) ->
     userid = encodeURIComponent userid
@@ -15,40 +25,34 @@ module.exports =
     keyword = encodeURIComponent keyword
     'http://store.steampowered.com/search/suggest?term=' + keyword + '&f=games&l=english'
 
-  getScreenhotPageUrls: (userid, appid, callback) ->
-    curl = Curl.create()
-    curl @formProfileUrl(userid, appid), (err) ->
-      urls = []
-      unless err?
-        $ = cheerio.load this.body
-        urls = $('.profile_media_item').map(-> $(this).attr('href')).get()
-      @close()
-      callback urls
+  getScreenhotPageUrls: (userid, appid) ->
+    def = q.defer()
+    @getUrl(@formProfileUrl(userid, appid)).then (html) ->
+      $ = cheerio.load html
+      urls = $('.profile_media_item').map(-> $(this).attr('href')).get()
+      def.resolve urls
+    def.promise
 
-  getUserScreenshots: (userid, appid, callback) ->
-    @getScreenhotPageUrls userid, appid, (urls) ->
-      promises = _.map urls, (url) ->
+  getUserScreenshots: (userid, appid) ->
+    allDef = q.defer()
+    @getScreenhotPageUrls(userid, appid).then (urls) =>
+      promises = _.map urls, (url) =>
         def = q.defer()
-        curl = Curl.create()
-        curl url, (err) ->
-          if err?
-            def.reject()
-          else
-            $ = cheerio.load this.body
-            def.resolve
-              src: $('#ActualMedia').parent().attr('href')
-              author: $('.linkAuthor').find('a').text()
-          @close()
+        @getUrl(url).then (html) ->
+          $ = cheerio.load html
+          def.resolve
+            src: $('#ActualMedia').parent().attr('href')
+            author: $('.linkAuthor').find('a').text()
         def.promise
-
       q.allSettled(promises).then (results) ->
-        callback _.filter(results, (r) -> r.state == 'fulfilled').map((r) -> r.value)
+        allDef.resolve _.filter(results, (r) -> r.state == 'fulfilled').map((r) -> r.value)
+    allDef.promise
 
   getScreenshots: (userids, appids, callback) ->
     promises = _.chain(userids).map((userid) =>
       _.map appids, (appid) =>
         def = q.defer()
-        @getUserScreenshots userid, appid, (screenshots) ->
+        @getUserScreenshots(userid, appid).then (screenshots) ->
           def.resolve screenshots
         def.promise
     ).flatten().value()
@@ -62,10 +66,7 @@ module.exports =
       callback []
     else
       curl = Curl.create()
-      curl @formGameSearchUrl(keyword), (err) ->
-        data = []
-        unless err?
-          $ = cheerio.load this.body
-          data = $('a').map(-> id: $(this).data('ds-appid'), title: $(this).find('.match_name').text()).get()
-        @close()
+      @getUrl(@formGameSearchUrl(keyword)).then (html) ->
+        $ = cheerio.load html
+        data = $('a').map(-> id: $(this).data('ds-appid'), title: $(this).find('.match_name').text()).get()
         callback data
