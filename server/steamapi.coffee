@@ -75,7 +75,6 @@ module.exports =
     if keyword.length == 0
       callback []
     else
-      curl = Curl.create()
       getUrl(formGameSearchUrl keyword).then (html) ->
         $ = cheerio.load html
         data = $('a').map(-> id: $(this).data(APP_ID_ATTR), title: $(this).find(SELECTORS.GAME_TITLE).text()).get()
