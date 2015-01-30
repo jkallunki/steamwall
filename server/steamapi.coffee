@@ -31,8 +31,7 @@ formGameSearchUrl = (keyword) ->
   keyword = encodeURIComponent keyword
   'http://store.steampowered.com/search/suggest?term=' + keyword + '&f=games&l=english'
 
-onlyFulfilled = (results) ->
-  _.filter(results, (r) -> r.state == 'fulfilled')
+onlyFulfilled = (results) -> _.filter results, (r) -> r.state == 'fulfilled'
 
 getScreenhotPageUrls = (userid, appid) ->
   def = q.defer()
@@ -54,7 +53,7 @@ getUserScreenshots = (userid, appid) ->
           author: $(SELECTORS.AUTHOR).find('a').text()
       def.promise
     q.allSettled(promises).then (results) ->
-      allDef.resolve onlyFulfilled(results).map (r) -> r.value
+      allDef.resolve _.pluck onlyFulfilled(results), 'value'
   allDef.promise
 
 # Public API:
@@ -68,7 +67,7 @@ module.exports =
         def.promise
     ).flatten().value()
     q.allSettled(promises).then (results) ->
-      callback _.chain(onlyFulfilled(results)).map((r) -> r.value).flatten().value()
+      callback _.chain(onlyFulfilled(results)).pluck('value').flatten().value()
 
   getGameSearch: (keyword, callback) ->
     keyword = keyword.trim()
