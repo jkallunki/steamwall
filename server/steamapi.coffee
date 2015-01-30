@@ -44,8 +44,8 @@ getScreenhotPageUrls = (userid, appid) ->
 
 getUserScreenshots = (userid, appid) ->
   allDef = q.defer()
-  getScreenhotPageUrls(userid, appid).then (urls) =>
-    promises = _.map urls, (url) =>
+  getScreenhotPageUrls(userid, appid).then (urls) ->
+    promises = _.map urls, (url) ->
       def = q.defer()
       getUrl(url).then (html) ->
         $ = cheerio.load html
@@ -60,8 +60,8 @@ getUserScreenshots = (userid, appid) ->
 # Public API:
 module.exports =
   getScreenshots: (userids, appids, callback) ->
-    promises = _.chain(userids).map((userid) =>
-      _.map appids, (appid) =>
+    promises = _.chain(userids).map((userid) ->
+      _.map appids, (appid) ->
         def = q.defer()
         getUserScreenshots(userid, appid).then (screenshots) ->
           def.resolve screenshots
